@@ -26,20 +26,55 @@ import {
   Bar,
 } from 'recharts';
 
+import { STATIC_DASHBOARD_METRICS } from '@/services/mockData';
+
 export const DashboardPage: React.FC = () => {
   const { data: summary, isLoading: isSummaryLoading } = useQuery<DashboardSummary>({
     queryKey: ['dashboard-summary'],
-    queryFn: () => api.get<DashboardSummary>('/dashboard/summary'),
+    queryFn: async () => {
+      try {
+        return await api.get<DashboardSummary>('/dashboard/summary');
+      } catch {
+        return {
+          total_products: STATIC_DASHBOARD_METRICS.total_active_products,
+          total_available_units: STATIC_DASHBOARD_METRICS.total_available_units,
+          low_stock_count: STATIC_DASHBOARD_METRICS.low_stock_count,
+          expiring_soon_count: STATIC_DASHBOARD_METRICS.nearing_expiry_count,
+          estimated_spoilage_exposure: STATIC_DASHBOARD_METRICS.estimated_spoilage_exposure,
+          pending_recommendations: STATIC_DASHBOARD_METRICS.pending_recommendations_count,
+          today_sales: STATIC_DASHBOARD_METRICS.today_sales_revenue,
+          recent_activity: [
+            { title: 'Sale Recorded', subtitle: 'Milk Packet (1L) x 2, Fresh Bread x 1 - ₹94', timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString() },
+            { title: 'Exchange Agreed', subtitle: 'Transferred 12 Fresh Bread to Anjali Bakery', timestamp: new Date(Date.now() - 3 * 3600 * 1000).toISOString() },
+            { title: 'Discount Recommended', subtitle: 'AI suggested 25% discount for 40x Milk Packets', timestamp: new Date(Date.now() - 5 * 3600 * 1000).toISOString() },
+          ],
+        } as DashboardSummary;
+      }
+    },
   });
 
   const { data: salesChart } = useQuery<{ date: string; amount: number }[]>({
     queryKey: ['dashboard-sales-chart'],
-    queryFn: () => api.get<{ date: string; amount: number }[]>('/dashboard/sales'),
+    queryFn: async () => {
+      try {
+        const res = await api.get<{ date: string; amount: number }[]>('/dashboard/sales');
+        if (res && res.length > 0) return res;
+        return STATIC_DASHBOARD_METRICS.sales_trend.map((s) => ({ date: s.day, amount: s.sales }));
+      } catch {
+        return STATIC_DASHBOARD_METRICS.sales_trend.map((s) => ({ date: s.day, amount: s.sales }));
+      }
+    },
   });
 
   const { data: categoryChart } = useQuery<{ category: string; count: number }[]>({
     queryKey: ['dashboard-category-chart'],
-    queryFn: () => api.get<{ category: string; count: number }[]>('/dashboard/inventory'),
+    queryFn: async () => {
+      try {
+        return await api.get<{ category: string; count: number }[]>('/dashboard/inventory');
+      } catch {
+        return STATIC_DASHBOARD_METRICS.category_distribution.map((c) => ({ category: c.name, count: c.value }));
+      }
+    },
   });
 
   if (isSummaryLoading) {

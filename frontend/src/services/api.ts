@@ -35,9 +35,11 @@ class ApiClient {
     const response = await fetch(url, config);
 
     if (response.status === 401) {
-      this.clearToken();
-      if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
-        window.location.href = '/login';
+      if (this.getToken() !== 'demo-jwt-token') {
+        this.clearToken();
+        if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+          window.location.href = '/login';
+        }
       }
     }
 

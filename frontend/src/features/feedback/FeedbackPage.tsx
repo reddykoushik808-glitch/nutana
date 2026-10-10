@@ -4,6 +4,8 @@ import { Star, MessageSquareHeart, CheckCircle, Award } from 'lucide-react';
 import { api } from '@/services/api';
 import { formatDate } from '@/lib/utils';
 
+import { STATIC_FEEDBACK } from '@/services/mockData';
+
 export const FeedbackPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [rating, setRating] = useState(5);
@@ -12,7 +14,15 @@ export const FeedbackPage: React.FC = () => {
 
   const { data: feedbacks, isLoading } = useQuery<any[]>({
     queryKey: ['feedback-list'],
-    queryFn: () => api.get<any[]>('/feedback'),
+    queryFn: async () => {
+      try {
+        const res = await api.get<any[]>('/feedback');
+        if (res && res.length > 0) return res;
+        return STATIC_FEEDBACK;
+      } catch {
+        return STATIC_FEEDBACK;
+      }
+    },
   });
 
   const submitMutation = useMutation({

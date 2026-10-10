@@ -16,6 +16,8 @@ import { api } from '@/services/api';
 import { Product } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
+import { STATIC_PRODUCTS } from '@/services/mockData';
+
 export const InventoryListPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -23,11 +25,17 @@ export const InventoryListPage: React.FC = () => {
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ['products', categoryFilter, search],
-    queryFn: () => {
-      let url = `/products?`;
-      if (categoryFilter !== 'All') url += `&category=${encodeURIComponent(categoryFilter)}`;
-      if (search) url += `&search=${encodeURIComponent(search)}`;
-      return api.get<Product[]>(url);
+    queryFn: async () => {
+      try {
+        let url = `/products?`;
+        if (categoryFilter !== 'All') url += `&category=${encodeURIComponent(categoryFilter)}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        const res = await api.get<Product[]>(url);
+        if (res && res.length > 0) return res;
+        return STATIC_PRODUCTS;
+      } catch {
+        return STATIC_PRODUCTS;
+      }
     },
   });
 

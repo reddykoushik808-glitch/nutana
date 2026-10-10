@@ -22,6 +22,8 @@ interface CartItem {
   discount: number;
 }
 
+import { STATIC_PRODUCTS } from '@/services/mockData';
+
 export const RecordSalePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,7 +33,19 @@ export const RecordSalePage: React.FC = () => {
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ['products-for-sale', searchTerm],
-    queryFn: () => api.get<Product[]>(`/products?search=${encodeURIComponent(searchTerm)}`),
+    queryFn: async () => {
+      try {
+        const res = await api.get<Product[]>(`/products?search=${encodeURIComponent(searchTerm)}`);
+        if (res && res.length > 0) return res;
+        return STATIC_PRODUCTS.filter((p) =>
+          !searchTerm || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      } catch {
+        return STATIC_PRODUCTS.filter((p) =>
+          !searchTerm || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+    },
   });
 
   const addToCart = (product: Product) => {

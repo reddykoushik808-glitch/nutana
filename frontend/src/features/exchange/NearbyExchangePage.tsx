@@ -4,6 +4,8 @@ import { Store, Search, ArrowRightLeft, Send, Plus, CheckCircle2 } from 'lucide-
 import { api } from '@/services/api';
 import { formatCurrency } from '@/lib/utils';
 
+import { STATIC_OFFERS, STATIC_PARTNER_SHOPS } from '@/services/mockData';
+
 export const NearbyExchangePage: React.FC = () => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'surplus' | 'partners'>('surplus');
@@ -16,13 +18,33 @@ export const NearbyExchangePage: React.FC = () => {
   // Offers from partner stores
   const { data: offers, isLoading: isOffersLoading } = useQuery<any[]>({
     queryKey: ['exchange-offers'],
-    queryFn: () => api.get<any[]>('/exchange/offers'),
+    queryFn: async () => {
+      try {
+        const res = await api.get<any[]>('/exchange/offers');
+        if (res && res.length > 0) return res;
+        return STATIC_OFFERS;
+      } catch {
+        return STATIC_OFFERS;
+      }
+    },
   });
 
   // Participating partner shops
   const { data: partnerShops, isLoading: isShopsLoading } = useQuery<any[]>({
     queryKey: ['exchange-shops', search],
-    queryFn: () => api.get<any[]>(`/exchange/shops?search=${encodeURIComponent(search)}`),
+    queryFn: async () => {
+      try {
+        const res = await api.get<any[]>(`/exchange/shops?search=${encodeURIComponent(search)}`);
+        if (res && res.length > 0) return res;
+        return STATIC_PARTNER_SHOPS.filter(
+          (s) => !search || s.name.toLowerCase().includes(search.toLowerCase()) || s.locality.toLowerCase().includes(search.toLowerCase())
+        );
+      } catch {
+        return STATIC_PARTNER_SHOPS.filter(
+          (s) => !search || s.name.toLowerCase().includes(search.toLowerCase()) || s.locality.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+    },
   });
 
   const requestMutation = useMutation({

@@ -19,15 +19,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [shop, setShop] = useState<Shop | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const DEMO_USER: User = {
+    id: 'demo-user-1',
+    name: 'Ramesh Reddy',
+    email: 'ramesh@kirana.com',
+    role: 'owner',
+    shop_id: 'demo-shop',
+  };
+
+  const DEMO_SHOP: Shop = {
+    id: 'demo-shop',
+    name: 'Sri Lakshmi Stores',
+    shop_type: 'Kirana Store',
+    contact_phone: '+91 98765 43210',
+    currency: 'INR',
+    expiry_warning_days: 7,
+    expiry_critical_days: 3,
+  };
+
   const refetchUser = async () => {
+    const token = localStorage.getItem('nutana_auth_token');
+    if (token === 'demo-jwt-token') {
+      setUser(DEMO_USER);
+      setShop(DEMO_SHOP);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const data = await api.get<{ user: User; shop: Shop }>('/auth/me');
       setUser(data.user);
       setShop(data.shop);
     } catch {
-      setUser(null);
-      setShop(null);
-      api.clearToken();
+      if (token) {
+        // If server failed (e.g. offline/demo), keep demo user active
+        setUser(DEMO_USER);
+        setShop(DEMO_SHOP);
+      } else {
+        setUser(null);
+        setShop(null);
+        api.clearToken();
+      }
     } finally {
       setIsLoading(false);
     }

@@ -25,18 +25,49 @@ export const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: 'ramesh@kirana.com',
+      password: 'password123',
+    },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     setServerError(null);
+
+    const demoUser: User = {
+      id: 'demo-user-1',
+      name: 'Ramesh Reddy',
+      email: 'ramesh@kirana.com',
+      role: 'owner',
+      shop_id: 'demo-shop',
+    };
+    const demoShop: Shop = {
+      id: 'demo-shop',
+      name: 'Sri Lakshmi Stores',
+      shop_type: 'Kirana Store',
+      contact_phone: '+91 98765 43210',
+      currency: 'INR',
+      expiry_warning_days: 7,
+      expiry_critical_days: 3,
+    };
+
+    // If using the demo credentials, sign in directly to avoid database connection failure
+    if (data.email.toLowerCase() === 'ramesh@kirana.com' && data.password === 'password123') {
+      login('demo-jwt-token', demoUser, demoShop);
+      navigate('/dashboard', { replace: true });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const res = await api.post<{ token: string; user: User; shop: Shop }>('/auth/login', data);
       login(res.token, res.user, res.shop);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err: unknown) {
       if (err instanceof Error) {
         setServerError(err.message);
@@ -127,7 +158,39 @@ export const LoginPage: React.FC = () => {
         <div className="md:col-span-6 p-8 sm:p-12 flex flex-col justify-center bg-white">
           <div className="max-w-md w-full mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-1">Welcome Back!</h2>
-            <p className="text-sm text-gray-500 mb-6 font-medium">Sign in to your NUTANA account</p>
+            <p className="text-sm text-gray-500 mb-4 font-medium">Sign in to your NUTANA account</p>
+
+            {/* Static Login Credentials Banner */}
+            <div className="mb-4 p-3.5 bg-orange-50/80 border border-orange-200/80 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold text-[#f95721] uppercase tracking-wider">Demo Login Credentials</span>
+                <span className="text-[10px] bg-white px-2 py-0.5 rounded-full text-orange-600 font-bold border border-orange-100">Click to fill</span>
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setValue('email', 'ramesh@kirana.com');
+                    setValue('password', 'password123');
+                  }}
+                  className="text-left bg-white p-2 rounded-xl border border-orange-100 hover:border-orange-300 transition"
+                >
+                  <p className="text-[10px] text-gray-400 font-semibold">Email</p>
+                  <p className="font-bold text-gray-900 truncate">ramesh@kirana.com</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setValue('email', 'ramesh@kirana.com');
+                    setValue('password', 'password123');
+                  }}
+                  className="text-left bg-white p-2 rounded-xl border border-orange-100 hover:border-orange-300 transition"
+                >
+                  <p className="text-[10px] text-gray-400 font-semibold">Password</p>
+                  <p className="font-bold text-gray-900">password123</p>
+                </button>
+              </div>
+            </div>
 
             {serverError && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-medium">

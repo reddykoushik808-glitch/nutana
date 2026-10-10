@@ -42,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
       {/* Brand Header */}
       <div className="h-16 flex items-center px-5 gap-3 border-b border-gray-800/80">
         <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shrink-0 overflow-hidden">
-          <img src="/nutana-logo.png" alt="Nutana Logo" className="w-full h-full object-contain" />
+          <img src="/nutana-emblem.png" alt="Nutana Emblem" className="w-full h-full object-contain" />
         </div>
         <div className="flex flex-col min-w-0">
           <span className="font-extrabold text-lg tracking-wider text-white">NUTANA</span>

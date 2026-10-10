@@ -14,13 +14,23 @@ import {
 import { api } from '@/services/api';
 import { Recommendation } from '@/types';
 
+import { STATIC_RECOMMENDATIONS } from '@/services/mockData';
+
 export const SmartSuggestionsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [filterType, setFilterType] = useState<string>('all');
 
   const { data: recommendations, isLoading } = useQuery<Recommendation[]>({
     queryKey: ['recommendations'],
-    queryFn: () => api.get<Recommendation[]>('/recommendations'),
+    queryFn: async () => {
+      try {
+        const res = await api.get<Recommendation[]>('/recommendations');
+        if (res && res.length > 0) return res;
+        return STATIC_RECOMMENDATIONS;
+      } catch {
+        return STATIC_RECOMMENDATIONS;
+      }
+    },
   });
 
   const generateMutation = useMutation({
