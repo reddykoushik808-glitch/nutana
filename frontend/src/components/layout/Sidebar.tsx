@@ -40,13 +40,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
   return (
     <aside className="w-64 bg-[#111216] text-white flex flex-col h-full border-r border-gray-800 shrink-0">
       {/* Brand Header */}
-      <div className="h-16 flex items-center px-6 gap-3 border-b border-gray-800/80">
-        <div className="w-9 h-9 rounded-xl bg-[#f95721] flex items-center justify-center font-black text-white text-lg tracking-wider shadow-md">
-          N
+      <div className="h-16 flex items-center px-5 gap-3 border-b border-gray-800/80">
+        <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shrink-0 overflow-hidden">
+          <img src="/nutana-logo.png" alt="Nutana Logo" className="w-full h-full object-contain" />
         </div>
-        <div className="flex flex-col">
-          <span className="font-extrabold text-xl tracking-wide text-white">NUTANA</span>
-          <span className="text-[10px] text-gray-400 font-medium tracking-tight truncate max-w-[140px]">
+        <div className="flex flex-col min-w-0">
+          <span className="font-extrabold text-lg tracking-wider text-white">NUTANA</span>
+          <span className="text-[10px] text-gray-400 font-medium tracking-tight truncate max-w-[130px]">
             {shop?.name || 'Kirana Intelligence'}
           </span>
         </div>

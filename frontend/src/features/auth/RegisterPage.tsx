@@ -116,9 +116,9 @@ export const RegisterPage: React.FC = () => {
         {/* Left Side: Illustration and value props */}
         <div className="md:col-span-5 bg-gradient-to-b from-orange-50/50 to-white p-8 sm:p-10 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-100">
           <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#f95721] flex items-center justify-center text-white font-extrabold text-xl shadow-md">
-                N
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 p-1 flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
+                <img src="/nutana-logo.png" alt="Nutana Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight text-gray-900">
